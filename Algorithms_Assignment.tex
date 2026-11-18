@@ -1,0 +1,579 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[top=0.7in,bottom=0.7in,left=0.7in,right=0.7in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+% Color definitions for academic styling
+\definecolor{primarydark}{RGB}{20, 30, 55}
+\definecolor{crimsonaccent}{RGB}{140, 35, 35}
+\definecolor{codebg}{RGB}{248, 249, 250}
+\definecolor{rulecolor}{RGB}{210, 215, 220}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primarydark,
+    citecolor=crimsonaccent,
+    urlcolor=primarydark,
+    pdftitle={Course Assignment: Advanced Algorithms and Computational Complexity},
+    pdfauthor={Hamza Payawala}
+}
+
+% Section formatting
+\titleformat{\section}{\large\bfseries\color{primarydark}}{\thesection}{0.8em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{primarydark}}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\small\bfseries\color{crimsonaccent}}{\thesubsubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{8pt}{3pt}
+\titlespacing*{\subsection}{0pt}{5pt}{2pt}
+\titlespacing*{\subsubsection}{0pt}{3pt}{1pt}
+
+% Global list spacing
+\setlist{itemsep=0.5pt,topsep=1.5pt,parsep=0pt,partopsep=0pt}
+
+% Header and Footer setup
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{gray} MSc IT: Algorithms \& Computational Complexity}
+\fancyhead[R]{\small\color{gray} Rosen Chapter 3 Reference}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Code and pseudocode listing style
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\scriptsize,
+    breaklines=true,
+    frame=single,
+    rulecolor=\color{rulecolor},
+    keywordstyle=\bfseries\color{primarydark},
+    commentstyle=\itshape\color{gray},
+    stringstyle=\color{crimsonaccent},
+    showstringspaces=false,
+    tabsize=4,
+    xleftmargin=4pt,
+    xrightmargin=4pt,
+    aboveskip=3pt,
+    belowskip=3pt
+}
+
+% Theorems and Definitions
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{property}{Property}[section]
+
+\begin{document}
+
+% -----------------------------------------------------------------------------
+% TITLE AND ACADEMIC METADATA BLOCK
+% -----------------------------------------------------------------------------
+\begin{center}
+    {\Large\textbf{\color{primarydark} Advanced Algorithms and Computational Complexity}}\\[4pt]
+    {\large An Analytical Investigation Based on Rosen Chapter 3}\\[8pt]
+    \rule{0.9\textwidth}{0.8pt}\\[8pt]
+    \small
+    \textbf{Course:} SC612 -- Discrete Mathematics \quad$|$\quad \textbf{Academic Level:} Master of Science in Information Technology (MSc IT)\\
+    \textbf{Author / Student:} Hamza Payawala (ID: 202612089) \quad$|$\quad \textbf{Date:} 17/11/2026\\
+    \textbf{Institution:} Dhirubhai Ambani University \quad$|$\quad \textbf{Instructor:} Prof. Gopinath Panda\\
+    \textbf{Primary Reference:} Kenneth H. Rosen, \textit{Discrete Mathematics and Its Applications}, 8th Ed., Ch.~3
+    \vspace{4pt}
+    \rule{0.9\textwidth}{0.8pt}
+\end{center}
+
+\vspace{-4pt}
+\begin{abstract}
+\noindent This academic assignment develops a rigorous examination of computational algorithms, algorithmic taxonomy, the asymptotic growth of functions, and computational complexity theory, based on Chapter 3 of Kenneth H. Rosen's \textit{Discrete Mathematics and Its Applications} (8th Edition). We formalize the mechanical definition of algorithms and examine their seven fundamental properties. We analyze foundational searching (Linear and Binary Search), sorting (Bubble Sort and Insertion Sort), and the Greedy paradigm via the Cashier's algorithm, establishing formal optimality criteria for canonical currency systems and counterexamples for non-canonical denominations. In asymptotic analysis, we rigorously define Big-$O$, Big-$\Omega$, and Big-$\Theta$, providing step-by-step witness proofs $(C, k)$ and analyzing the growth hierarchy under fixed constants $b > 2$ and $c > 1$. Finally, computational complexity is dimensioned across Time and Space in the Random Access Machine (RAM) model, deriving exact operation counts for Best, Average, and Worst cases, including the $\Theta(n)$ best-case of optimized Bubble Sort with $n-1$ comparisons and zero swaps.
+\end{abstract}
+
+\vspace{-6pt}
+\setcounter{tocdepth}{2}
+\tableofcontents
+\vspace{6pt}
+\hrule
+\vspace{8pt}
+
+% -----------------------------------------------------------------------------
+% CHAPTER 1: WHAT IS AN ALGORITHM?
+% -----------------------------------------------------------------------------
+\section{What is an Algorithm?}
+
+\subsection{Historical Etymology and Conceptual Foundations}
+The term \textit{algorithm} derives etymologically from the Latinized name of the 9th-century Persian mathematician and astronomer \textit{Mu\d{h}ammad ibn M\=us\=a al-Khw\=arizm\=i}, whose landmark treatise \textit{Kit\=ab al-Jabr wa-l-Muq\=abala} introduced systematic procedural methods for solving linear and quadratic equations. Historically, an algorithm referred specifically to the rules of arithmetic using Hindu-Arabic numerals. In modern computer science and discrete mathematics, the concept has evolved into the foundational abstraction of all deterministic computation.
+
+\begin{definition}[\textbf{Algorithm; Rosen Section 3.1}]
+An \textbf{algorithm} is a finite sequence of precise instructions for solving a problem or performing a computation.
+\end{definition}
+
+An algorithm operates as an abstract state-transition system. Given an input configuration, it proceeds through an unambiguous, finite sequence of discrete computational states before terminating at a final state that yields the desired output. It is crucial to distinguish an algorithm from its physical implementation: an algorithm is an abstract mathematical entity independent of computer hardware, operating systems, and specific programming language semantics.
+
+\subsection{The Seven Core Properties of an Algorithm}
+According to the canonical criteria set forth by Kenneth H. Rosen in Section 3.1, any procedure claiming status as an algorithm must strictly satisfy seven essential properties:
+
+\begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=2pt]
+    \item \textbf{Input:} An algorithm must have specified input values originating from a clearly delineated input domain. Inputs represent the specific problem instances to be solved.
+    \item \textbf{Output:} For each valid set of inputs, an algorithm must produce output values from a specified solution domain. The output represents the formal computational result.
+    \item \textbf{Definiteness (Unambiguity):} Every individual step of an algorithm must be precisely and unambiguously defined. The state transitions following each instruction must be mathematically deterministic.
+    \item \textbf{Correctness:} The algorithm must produce the correct output for every valid input instance, satisfying the total correctness condition: the procedure halts, and post-conditions are fully satisfied.
+    \item \textbf{Finiteness (Termination):} An algorithm must produce the desired output after a finite sequence of computational steps for any valid input. An infinite loop violates this condition and is classified as a computational process rather than an algorithm.
+    \item \textbf{Effectiveness (Feasibility):} Each operation must be elementary enough that it can be carried out exactly and in a finite amount of time using a pencil and paper or an idealized automaton.
+    \item \textbf{Generality:} The procedural specification must apply broadly to all problem instances of the required form, rather than functioning only for a single isolated input set.
+\end{enumerate}
+
+\subsection{Algorithmic Representation and Pseudocode Conventions}
+Algorithms can be expressed through natural language, formal flowcharts, programming languages, or structured pseudocode. Natural language lacks formal precision, while concrete programming languages include hardware-specific syntax and memory-management overhead. Structured pseudocode strikes an optimal balance, providing clear control structures while abstracting away language-specific quirks.
+
+In accordance with Rosen (Section 3.1), pseudocode conventions employ:
+\begin{itemize}[leftmargin=*,itemsep=0pt,topsep=1pt]
+    \item Procedure headers with typed parameters: \textbf{procedure} $\text{Name}(a_1, a_2, \dots, a_n: \text{type})$.
+    \item Assignment operators using the colon-equals symbol ($:=$).
+    \item Indentation-based or explicit block structuring for selection (\textbf{if}, \textbf{then}, \textbf{else}) and iteration (\textbf{for}, \textbf{while}).
+    \item Explicit comments delineated by curly braces $\{ \dots \}$.
+\end{itemize}
+
+\subsection{Illustrative Case Study: Finding the Maximum Element}
+Consider the foundational task of identifying the largest element in an unordered finite sequence of real numbers.
+
+\begin{lstlisting}[language=Pascal,caption={Finding the Maximum Element (Rosen Algorithm 1)}]
+procedure max(a_1, a_2, ..., a_n: real numbers with n >= 1)
+    max_val := a_1
+    for i := 2 to n
+        if a_i > max_val then
+            max_val := a_i
+    return max_val {max_val is the largest element}
+\end{lstlisting}
+
+\noindent\textbf{Formal Correctness Verification via Loop Invariants:}\\
+To rigorously establish correctness, we define the loop invariant:
+$$\mathcal{P}(k): \text{ At the conclusion of the iteration where } i = k, \text{ the variable } \text{max\_val} = \max(a_1, a_2, \dots, a_k).$$
+\begin{itemize}[leftmargin=*,itemsep=0pt,topsep=1pt]
+    \item \textit{Basis Step ($k=1$):} Prior to loop entry, $\text{max\_val} := a_1 = \max(a_1)$. The invariant holds.
+    \item \textit{Inductive Step:} Assume $\mathcal{P}(k)$ is true for some $2 \le k < n$. In iteration $k+1$, the algorithm evaluates the conditional $\text{if } a_{k+1} > \text{max\_val}$. If true, $\text{max\_val}$ is updated to $a_{k+1}$; otherwise, it retains its value. In both cases, $\text{max\_val} = \max(\max(a_1, \dots, a_k), a_{k+1}) = \max(a_1, \dots, a_{k+1})$. Thus $\mathcal{P}(k+1)$ holds.
+    \item \textit{Termination:} The loop terminates after iteration $n$. By induction, $\text{max\_val} = \max(a_1, \dots, a_n)$. Correctness is proven.
+\end{itemize}
+
+\subsection{Supplementary Theoretical Boundary: The Halting Problem}
+While algorithms solve an enormous spectrum of practical problems, computer science recognizes inherent mathematical limitations on algorithmic solvability. As introduced in Rosen (Section 3.1), the \textbf{Halting Problem}, proved unsolvable by Alan Turing in 1936, establishes that there exist well-defined computational problems for which no general algorithm can ever be constructed.
+
+\begin{theorem}[\textbf{Unsolvability of the Halting Problem; Turing 1936, Rosen 3.1}]
+There does not exist an algorithm $H(P, d)$ that takes as input an arbitrary computer program $P$ and input data $d$, and correctly decides in all cases whether $P$ will halt on input $d$ or run forever.
+\end{theorem}
+
+\begin{proof}[Proof Sketch by Diagonalization / Contradiction]
+Assume such an algorithm $H(P, d)$ exists, returning ``halts'' or ``loops forever''. Construct a procedure $K(P)$ that calls $H(P, P)$:
+$$\textbf{procedure } K(P): \quad \textbf{if } H(P, P) = \text{``halts''} \textbf{ then loop forever else halt}.$$
+Now execute $K$ on itself: $K(K)$. If $K(K)$ halts, then $H(K, K) = \text{``halts''}$, causing $K$ to loop forever (contradiction). If $K(K)$ loops forever, $H(K, K) = \text{``loops forever''}$, causing $K$ to halt immediately (contradiction). Thus, no such algorithm $H$ can exist. The Halting Problem is computationally undecidable.
+\end{proof}
+
+% -----------------------------------------------------------------------------
+% CHAPTER 2: TYPES AND PARADIGMS OF ALGORITHMS
+% -----------------------------------------------------------------------------
+\section{Types and Paradigms of Algorithms}
+
+\subsection{Searching Algorithms: Linear Search vs Binary Search}
+The search problem involves locating a target value $x$ in a sequence $a_1, a_2, \dots, a_n$, returning the index of the element if found, or 0 (indicating failure).
+
+\subsubsection{Linear Search (Sequential Search)}
+Linear Search examines elements sequentially from index 1 to $n$. It requires no prior ordering of the input sequence.
+
+\begin{lstlisting}[language=Pascal,caption={Linear Search (Rosen Algorithm 2)}]
+procedure linear_search(x: integer, a_1, a_2, ..., a_n: integers)
+    i := 1
+    while (i <= n and x != a_i)
+        i := i + 1
+    if i <= n then location := i else location := 0
+    return location {subscript of term equal to x, or 0}
+\end{lstlisting}
+
+\subsubsection{Binary Search}
+When the input list is pre-sorted in non-decreasing order ($a_1 \le a_2 \le \dots \le a_n$), Binary Search achieves dramatically superior performance by repeatedly bisecting the search space.
+
+\begin{lstlisting}[language=Pascal,caption={Binary Search (Rosen Algorithm 3)}]
+procedure binary_search(x: integer, a_1, a_2, ..., a_n: integers in increasing order)
+    i := 1 {left endpoint}
+    j := n {right endpoint}
+    while i < j
+        m := floor((i + j) / 2)
+        if x > a_m then i := m + 1 else j := m
+    if x = a_i then location := i else location := 0
+    return location {subscript of term equal to x, or 0}
+\end{lstlisting}
+
+\noindent At each iteration, the search window size $k = j - i + 1$ is halved: $\lfloor k/2 \rfloor$. The interval shrinks from $n$ to $n/2, n/4, \dots, 1$, guaranteeing termination within $\lfloor \log_2 n \rfloor + 1$ iterations.
+
+\subsection{Sorting Algorithms: Bubble Sort and Insertion Sort}
+Sorting arranges a sequence of $n$ elements into non-decreasing order.
+
+\subsubsection{Optimized Bubble Sort}
+Bubble Sort makes repeated passes through the array, comparing adjacent elements and swapping them if they are out of order. In each pass, the largest remaining unsorted element ``bubbles up'' to its correct position.
+
+\begin{lstlisting}[language=Pascal,caption={Optimized Bubble Sort (Rosen Algorithm 4 with Early Exit)}]
+procedure bubble_sort(a_1, a_2, ..., a_n: real numbers, n >= 2)
+    for i := 1 to n - 1
+        swapped := false
+        for j := 1 to n - i
+            if a_j > a_{j+1} then
+                swap(a_j, a_{j+1})
+                swapped := true
+        if not swapped then break {already sorted}
+\end{lstlisting}
+
+\subsubsection{Insertion Sort}
+Insertion Sort maintains a sorted prefix in positions 1 through $j-1$. In each step, the $j$-th element is extracted and inserted into its proper relative position by shifting greater elements to the right.
+
+\begin{lstlisting}[language=Pascal,caption={Insertion Sort (Rosen Algorithm 5)}]
+procedure insertion_sort(a_1, a_2, ..., a_n: real numbers, n >= 2)
+    for j := 2 to n
+        key := a_j;  i := j - 1
+        while (i > 0 and a_i > key)
+            a_{i+1} := a_i
+            i := i - 1
+        a_{i+1} := key
+\end{lstlisting}
+Insertion sort is an \textit{online} algorithm: it can sort a stream of data in real-time as items arrive.
+
+\subsection{The Greedy Algorithmic Paradigm and the Cashier's Problem}
+The greedy paradigm constructs a solution through a sequence of choices, where each choice is locally optimal according to an immediate heuristic criterion, with no backtracking.
+
+\begin{lstlisting}[language=Pascal,caption={Greedy Cashier's Algorithm (Rosen Algorithm 6)}]
+procedure make_change(c_1, c_2, ..., c_r: coin values with c_1 > c_2 > ... > c_r, n: integer)
+    for i := 1 to r
+        d_i := 0 {count of coins of value c_i}
+        while n >= c_i
+            d_i := d_i + 1
+            n := n - c_i
+    return d_1, d_2, ..., d_r {coin counts}
+\end{lstlisting}
+
+\noindent\textbf{Optimality Proof for Canonical Currency (Rosen 3.1):}\\
+In standard United States currency (quarters: 25\textcent, dimes: 10\textcent, nickels: 5\textcent, pennies: 1\textcent), the greedy cashier's algorithm is provably optimal. An optimal change set cannot contain:
+\begin{itemize}[leftmargin=*,itemsep=0pt,topsep=1pt]
+    \item $\ge 5$ pennies (can be replaced by 1 nickel, reducing coin count from 5 to 1).
+    \item $\ge 2$ nickels (replaceable by 1 dime, reducing coin count from 2 to 1).
+    \item $\ge 3$ dimes (replaceable by 1 quarter and 1 nickel, reducing 3 coins to 2).
+    \item 2 dimes and 1 nickel (total 25\textcent, replaceable by 1 quarter).
+\end{itemize}
+Thus, any optimal solution must minimize coins by prioritizing quarters, then dimes, then nickels, and finally pennies---matching the greedy selection sequence.
+
+\vspace{3pt}
+\noindent\textbf{Counterexample for Non-Canonical Currency:}\\
+For arbitrary coin sets, greedy choice fails. Let denominations be $C = \{4, 3, 1\}$ and target change $n = 6$:
+\begin{itemize}[leftmargin=*,itemsep=0pt,topsep=1pt]
+    \item \textit{Greedy Selection:} Takes one 4\textcent\ coin (remainder 2), then two 1\textcent\ coins: $\{4, 1, 1\}$ $\implies \mathbf{3}$ \textbf{coins}.
+    \item \textit{Optimal Global Solution:} Takes two 3\textcent\ coins: $\{3, 3\}$ $\implies \mathbf{2}$ \textbf{coins}.
+\end{itemize}
+This counterexample proves that the greedy choice property requires special algebraic structures (such as matroids) to guarantee global optimality.
+
+\subsection{Comparative Matrix of Algorithmic Paradigms}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Systematic Comparison of Major Algorithmic Design Paradigms}
+\label{tab:paradigms}
+\vspace{2pt}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{@{}llllp{5.5cm}@{}}
+\toprule
+\textbf{Paradigm} & \textbf{Decision Strategy} & \textbf{Aux. Space} & \textbf{Optimality Guarantee} & \textbf{Canonical Examples} \\
+\midrule
+\textbf{Brute Force} & Exhaustive combinatorial search & $O(1)$ & Guaranteed (if finite) & Linear Search, Naive Matrix Multiply \\
+\textbf{Greedy} & Local optimal choice; no backtracking & $O(1)$ & Conditional on matroid structure & Cashier's Change, Dijkstra, Kruskal \\
+\textbf{Divide \& Conquer} & Partition, recursively solve, recombine & $O(\log n)$ to $O(n)$ & Guaranteed & Binary Search, Merge Sort, Fast Fourier \\
+\textbf{Dynamic Program.} & Tabulate overlapping sub-problems & $O(n)$ to $O(n^2)$ & Globally optimal & General Coin Change, Bellman-Ford \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+% -----------------------------------------------------------------------------
+% CHAPTER 3: THE GROWTH OF FUNCTIONS (ASYMPTOTIC ANALYSIS)
+% -----------------------------------------------------------------------------
+\section{The Growth of Functions}
+
+\subsection{Theoretical Motivation for Asymptotic Analysis}
+Evaluating the efficiency of an algorithm by measuring physical execution time in seconds is fundamentally flawed: wall-clock runtimes depend on hardware architectures, processor clock frequencies, cache hierarchies, memory bus bandwidths, and compiler optimization flags. 
+
+Asymptotic analysis abstracts away machine-dependent constants and implementation variations. It characterizes the limiting behavior of an algorithm's resource consumption as the input scale $n$ approaches infinity ($n \to \infty$).
+
+\subsection{Formal Asymptotic Notations and Witness Proofs}
+According to Rosen (Section 3.2), the asymptotic growth of functions is formally established through Big-$O$, Big-$\Omega$, and Big-$\Theta$ notations.
+
+\subsubsection{Big-$O$ Notation (Asymptotic Upper Bound)}
+\begin{definition}[\textbf{Big-$O$ Notation; Rosen Section 3.2}]
+Let $f$ and $g$ be functions from the set of integers or real numbers to the set of real numbers. We say that $f(x)$ is $O(g(x))$ if there exist constants $C$ and $k$ such that:
+\begin{equation}
+|f(x)| \le C |g(x)| \quad \text{whenever } x > k.
+\end{equation}
+The constants $C$ and $k$ are called \textbf{witnesses} to the relationship $f(x)$ is $O(g(x))$.
+\end{definition}
+
+To prove that $f(x)$ is $O(g(x))$, one must explicitly produce at least one valid witness pair $(C, k)$ of positive constants.
+
+\paragraph{Proof 1: Polynomial Function Bound}
+\textbf{Claim:} Prove that $f(n) = 4n^2 + 7n + 5$ is $O(n^2)$.
+\begin{proof}
+We seek constants $C > 0$ and $k \ge 0$ such that $|4n^2 + 7n + 5| \le C n^2$ for all $n > k$. 
+Assume $n \ge 1$. Observe that $n \le n^2$ and $1 \le n^2$. Therefore:
+$$|f(n)| = 4n^2 + 7n + 5 \le 4n^2 + 7n^2 + 5n^2 = (4 + 7 + 5)n^2 = 16n^2 \quad \forall n \ge 1.$$
+Hence, with witnesses $\mathbf{C = 16}$ and $\mathbf{k = 1}$, the condition $|f(n)| \le C n^2$ holds for all $n > k$. 
+Therefore, $f(n)$ is $O(n^2)$.
+\end{proof}
+\noindent\textit{Witness Non-Uniqueness:} If we instead choose $k = 7$, then for all $n > 7$, we have $7n < n^2$ and $5 < n^2$, yielding $4n^2 + 7n + 5 < 4n^2 + n^2 + n^2 = 6n^2$. Thus, $\mathbf{C = 6}$ and $\mathbf{k = 7}$ also constitute valid witnesses.
+
+\paragraph{Proof 2: Factorial Growth Bound}
+\textbf{Claim:} Prove that $f(n) = n!$ is $O(n^n)$.
+\begin{proof}
+Recall that $n! = 1 \cdot 2 \cdot 3 \cdots n$. Since each of the $n$ factors satisfies $i \le n$ for all $1 \le i \le n$:
+$$n! = 1 \cdot 2 \cdot 3 \cdots n \le n \cdot n \cdot n \cdots n = n^n \quad \forall n \ge 1.$$
+Thus, $|n!| \le 1 \cdot |n^n|$ for all $n > 0$. Here, witnesses $\mathbf{C = 1}$ and $\mathbf{k = 0}$ establish that $n!$ is $O(n^n)$.
+\end{proof}
+
+\subsubsection{Big-$\Omega$ Notation (Asymptotic Lower Bound)}
+While Big-$O$ provides an asymptotic ceiling, Big-$\Omega$ specifies an asymptotic floor, guaranteeing that an algorithm requires at least a certain rate of resource consumption.
+
+\begin{definition}[\textbf{Big-$\Omega$ Notation; Rosen Section 3.2}]
+Let $f$ and $g$ be functions from the integers or reals to the reals. We say that $f(x)$ is $\Omega(g(x))$ if there exist positive constants $C$ and $k$ such that:
+\begin{equation}
+|f(x)| \ge C |g(x)| \quad \text{whenever } x > k.
+\end{equation}
+\end{definition}
+
+\begin{theorem}[\textbf{Duality Theorem}]
+$f(x) \text{ is } \Omega(g(x)) \iff g(x) \text{ is } O(f(x))$.
+\end{theorem}
+
+\paragraph{Proof 3: Big-$\Omega$ for Polynomial}
+\textbf{Claim:} Prove that $f(n) = 3n^3 + 2n$ is $\Omega(n^3)$.
+\begin{proof}
+For all $n \ge 1$, we observe that $2n \ge 0$. Hence:
+$$|f(n)| = 3n^3 + 2n \ge 3n^3 = 3|n^3| \quad \forall n \ge 1.$$
+Choosing witnesses $\mathbf{C = 3}$ and $\mathbf{k = 0}$, we satisfy $|f(n)| \ge C |n^3|$ for all $n > k$. Thus, $f(n)$ is $\Omega(n^3)$.
+\end{proof}
+
+\subsubsection{Big-$\Theta$ Notation (Asymptotically Tight Bound)}
+\begin{definition}[\textbf{Big-$\Theta$ Notation; Rosen Section 3.2}]
+We say that $f(x)$ is $\Theta(g(x))$ if $f(x)$ is both $O(g(x))$ and $\Omega(g(x))$. Equivalently, there exist positive constants $C_1$, $C_2$, and $k$ such that:
+\begin{equation}
+C_1 |g(x)| \le |f(x)| \le C_2 |g(x)| \quad \text{whenever } x > k.
+\end{equation}
+When $f(x)$ is $\Theta(g(x))$, we say that $f$ and $g$ have the same rate of growth (are of the same order).
+\end{definition}
+
+\subsubsection{Supplementary Strict Bounds: Little-$o$ and Little-$\omega$}
+In advanced asymptotic analysis, strict inequalities describe dominated growth:
+\begin{itemize}[leftmargin=*,itemsep=0pt,topsep=1pt]
+    \item \textbf{Little-$o$:} $f(x)$ is $o(g(x)) \iff \lim_{x \to \infty} \frac{f(x)}{g(x)} = 0$. (Strict upper bound; $f$ grows strictly slower than $g$).
+    \item \textbf{Little-$\omega$:} $f(x)$ is $\omega(g(x)) \iff \lim_{x \to \infty} \frac{f(x)}{g(x)} = \infty$. (Strict lower bound; $f$ grows strictly faster than $g$).
+\end{itemize}
+
+\subsection{The Asymptotic Hierarchy of Common Functions}
+Standard functions in computational complexity are organized into a strict hierarchy of dominance. 
+
+\noindent\textbf{Crucial Assumptions on Constants:}\\
+Throughout this hierarchy, $b$ and $c$ represent fixed real constants satisfying:
+\begin{equation}
+b > 2 \quad \text{and} \quad c > 1.
+\end{equation}
+Under these explicit assumptions, the hierarchy of standard functions satisfies:
+\begin{equation}
+1 \prec \log n \prec n \prec n \log n \prec n^c \prec b^n \prec n! \prec n^n
+\end{equation}
+where $f \prec g$ denotes that $f(n)$ is $o(g(n))$, meaning that $\lim_{n \to \infty} \frac{f(n)}{g(n)} = 0$.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Comparison of Growth Functions Across Problem Scales (with $c=2, b=3$)}
+\label{tab:growth}
+\vspace{2pt}
+\begin{tabular}{@{}llllll@{}}
+\toprule
+\textbf{Function Class} & \textbf{Expression} & $n = 10$ & $n = 100$ & $n = 1,000$ & $n = 10,000$ \\
+\midrule
+Constant & $1$ & 1 & 1 & 1 & 1 \\
+Logarithmic & $\log_2 n$ & 3.32 & 6.64 & 9.97 & 13.29 \\
+Linear & $n$ & 10 & 100 & 1,000 & 10,000 \\
+Linearithmic & $n \log_2 n$ & 33.2 & 664 & 9,966 & $1.33 \times 10^5$ \\
+Quadratic ($c=2$) & $n^2$ & 100 & 10,000 & $10^6$ & $10^8$ \\
+Cubic ($c=3$) & $n^3$ & 1,000 & $10^6$ & $10^9$ & $10^{12}$ \\
+Exponential ($b=3$) & $3^n$ & 59,049 & $5.15 \times 10^{47}$ & $1.32 \times 10^{477}$ & $10^{4771}$ \\
+Factorial & $n!$ & $3.63 \times 10^6$ & $9.33 \times 10^{157}$ & $4.02 \times 10^{2567}$ & $10^{35659}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Algebraic Rules and Combination Theorems}
+According to Rosen (Section 3.2), the following algebraic rules govern function combinations:
+\begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=1pt]
+    \item \textbf{Leading Term Dominance (Polynomials):} If $P(n) = a_m n^m + a_{m-1} n^{m-1} + \dots + a_1 n + a_0$ with $a_m \ne 0$, then $P(n)$ is $\Theta(n^m)$. Lower-degree terms and constant coefficients do not alter asymptotic order.
+    \item \textbf{Maximum Rule (Sum Rule):} If $f_1(x)$ is $O(g_1(x))$ and $f_2(x)$ is $O(g_2(x))$, then:
+    $$(f_1 + f_2)(x) \text{ is } O(\max(|g_1(x)|, |g_2(x)|)).$$
+    \item \textbf{Product Rule:} If $f_1(x)$ is $O(g_1(x))$ and $f_2(x)$ is $O(g_2(x))$, then:
+    $$(f_1 \cdot f_2)(x) \text{ is } O(g_1(x) \cdot g_2(x)).$$
+    \item \textbf{Transitivity:} If $f(n)$ is $O(g(n))$ and $g(n)$ is $O(h(n))$, then $f(n)$ is $O(h(n))$.
+\end{enumerate}
+
+% -----------------------------------------------------------------------------
+% CHAPTER 4: COMPUTATIONAL COMPLEXITY OF ALGORITHMS
+% -----------------------------------------------------------------------------
+\section{Computational Complexity of Algorithms}
+
+\subsection{Dimensions of Complexity: Time and Space}
+The computational complexity of an algorithm quantifies the resources required to execute it as a function of the input size $n$ (Rosen Section 3.3).
+\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
+    \item \textbf{Time Complexity:} Characterized by counting the number of elementary operations executed. In the theoretical Random Access Machine (RAM) model, basic operations (arithmetic steps, variable assignments, and key comparisons) execute in uniform $O(1)$ time. In comparison-based searching and sorting, \textit{key comparisons} constitute the primary metric.
+    \item \textbf{Space Complexity:} Quantifies the memory allocated during execution. It is partitioned into \textit{input space} (storage for the input instance) and \textit{auxiliary space} (extra working memory for local variables, buffers, and the recursive call stack). Algorithms that require $O(1)$ auxiliary space are classified as \textbf{in-place}.
+\end{itemize}
+
+\subsection{Analytical Cases: Best-Case, Average-Case, and Worst-Case}
+Because an algorithm's operation count may vary across distinct input instances of identical size $n$, three cases are evaluated:
+\begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=2pt]
+    \item \textbf{Worst-Case Complexity, $W(n)$:} The maximum number of basic operations required across all valid inputs of size $n$: $W(n) = \max_{I \in \mathcal{D}_n} T(I)$. It provides an absolute upper bound guarantee.
+    \item \textbf{Best-Case Complexity, $B(n)$:} The minimum number of operations required over all valid inputs of size $n$: $B(n) = \min_{I \in \mathcal{D}_n} T(I)$.
+    \item \textbf{Average-Case Complexity, $A(n)$:} The expected number of operations assuming an underlying probability distribution $P(I)$ over the domain $\mathcal{D}_n$: $A(n) = \sum_{I \in \mathcal{D}_n} P(I) \cdot T(I)$. Under the standard uniform distribution assumption, every input permutation is equally likely.
+\end{enumerate}
+
+\subsection{Mathematical Derivations of Algorithm Complexities}
+
+\subsubsection{Linear Search Complexity Derivation}
+Given an array $a_1, \dots, a_n$ and target $x$:
+\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=1pt]
+    \item \textbf{Worst Case:} Occurs when $x$ is at index $n$ or is absent. The while loop evaluates $n$ element comparisons plus loop bound checks. Total key comparisons $= n$. Thus, $W(n) = \mathbf{\Theta(n)}$.
+    \item \textbf{Best Case:} Occurs when $a_1 = x$. The loop terminates on the very first evaluation. Total key comparisons $= 1$. Thus, $B(n) = \mathbf{\Theta(1)}$.
+    \item \textbf{Average Case:} Assume target $x$ is present in the list with probability $p$, and equally likely to occupy any position $i \in \{1, \dots, n\}$ with probability $p/n$. If $x$ is absent (probability $1-p$), $n$ comparisons occur:
+    $$A(n) = \sum_{i=1}^n \left(\frac{p}{n}\right) i + (1 - p)n = \frac{p}{n} \left[\frac{n(n+1)}{2}\right] + n(1 - p) = \frac{p(n+1)}{2} + n(1 - p).$$
+    When $x$ is guaranteed to be present ($p = 1$), $A(n) = \frac{n+1}{2}$, which is $\mathbf{\Theta(n)}$.
+\end{itemize}
+
+\subsubsection{Binary Search Complexity Derivation}
+Given a sorted array of $n$ elements:
+\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=1pt]
+    \item \textbf{Worst Case:} The search interval of length $k$ is bisected at each step: $\lfloor k/2 \rfloor$. The search terminates when interval length reaches 1. For an array of size $n$, the maximum number of iterations is $\lfloor \log_2 n \rfloor + 1$. Each iteration performs at most 2 comparisons. Thus, $W(n) = \mathbf{\Theta(\log n)}$.
+    \item \textbf{Best Case:} Occurs when the target element matches the initial midpoint element. Thus, $B(n) = \mathbf{\Theta(1)}$.
+    \item \textbf{Average Case:} Summing external path lengths on the binary decision tree yields an average comparison count of approximately $\log_2 n - 1$. Thus, $A(n) = \mathbf{\Theta(\log n)}$.
+\end{itemize}
+
+\subsubsection{Optimized Bubble Sort Complexity Derivation}
+\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=1pt]
+    \item \textbf{Worst Case:} Occurs when the array is sorted in reverse order. Pass $i$ executes $n - i$ adjacent comparisons:
+    $$\sum_{i=1}^{n-1} (n - i) = (n - 1) + (n - 2) + \dots + 1 = \frac{n(n - 1)}{2} = \frac{n^2 - n}{2}.$$
+    Worst-case comparisons and swaps both equal $\frac{n(n-1)}{2}$. Thus, $W(n) = \mathbf{\Theta(n^2)}$.
+    \item \textbf{Best Case (Optimized with Early-Exit Flag):}\\
+    \textbf{Crucial Formal Specification:} When the input array is already sorted in non-decreasing order, the first pass evaluates all adjacent pairs from $j=1$ to $n-1$. Exactly $\mathbf{n-1}$ \textbf{comparisons} are made, and $\mathbf{0}$ \textbf{swaps} occur. The swap flag detects zero exchanges and immediately terminates the algorithm. Thus:
+    \begin{equation}
+    B(n) = \mathbf{\Theta(n)} \quad \text{with exactly } n-1 \text{ comparisons and } 0 \text{ swaps.}
+    \end{equation}
+    \item \textbf{Average Case:} Averaging over all permutations yields $\frac{n(n-1)}{4}$ expected comparisons and swaps. Thus, $A(n) = \mathbf{\Theta(n^2)}$. Auxiliary space is $\mathbf{\Theta(1)}$ (in-place).
+\end{itemize}
+
+\subsubsection{Insertion Sort Complexity Derivation}
+\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=1pt]
+    \item \textbf{Worst Case:} Reverse-sorted array. For each $j$ from 2 to $n$, the key is compared against all $j-1$ sorted elements and shifted: $\sum_{j=2}^n (j - 1) = \frac{n(n-1)}{2}$. Thus, $W(n) = \mathbf{\Theta(n^2)}$.
+    \item \textbf{Best Case:} Already sorted array. For each $j$, exactly 1 comparison ($a_{j-1} \le \text{key}$) occurs, with 0 shifts: $\sum_{j=2}^n 1 = n - 1$. Thus, $B(n) = \mathbf{\Theta(n)}$ with $n-1$ comparisons and 0 shifts.
+    \item \textbf{Average Case:} On average, inserting element $j$ requires $j/2$ comparisons: $\sum_{j=2}^n \frac{j}{2} \approx \frac{n^2}{4}$. Thus, $A(n) = \mathbf{\Theta(n^2)}$. Auxiliary space is $\mathbf{\Theta(1)}$ (in-place).
+\end{itemize}
+
+\subsection{Standard Complexity Classes and Practical Tractability}
+Algorithms are categorized into standard complexity classes according to their asymptotic time bounds:
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Standard Computational Complexity Classes (Rosen Section 3.3)}
+\label{tab:classes}
+\vspace{2pt}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Complexity Class} & \textbf{Common Name} & \textbf{Practical Engineering Scalability} \\
+\midrule
+$\Theta(1)$ & Constant & Execution time is invariant to input scale $n$. \\
+$\Theta(\log n)$ & Logarithmic & Exceptionally scalable; doubling input size adds a constant time increment. \\
+$\Theta(n)$ & Linear & Execution time scales in direct, 1-to-1 proportion with input size. \\
+$\Theta(n \log n)$ & Linearithmic & Optimal theoretical lower bound for general comparison-based sorting. \\
+$\Theta(n^2)$ & Quadratic & Practical for small to moderate data sets ($n < 10^5$); prohibitive for big data. \\
+$\Theta(n^c), c > 1$ & Polynomial & Formally classified as \textbf{tractable}; efficiently solvable for reasonable $n$. \\
+$\Theta(b^n), b > 2$ & Exponential & Formally classified as \textbf{intractable}; computational explosion as $n$ grows. \\
+$\Theta(n!)$ & Factorial & Combinatorially intractable; unsolvable on modern hardware for $n > 25$. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Practical Execution Times on a $10^9$ Operations/Second Processor}
+\label{tab:times}
+\vspace{2pt}
+\begin{tabular}{@{}lllll@{}}
+\toprule
+\textbf{Complexity} & $n = 10$ & $n = 50$ & $n = 100$ & $n = 1,000$ \\
+\midrule
+$\log_2 n$ & $3.3 \text{ ns}$ & $5.6 \text{ ns}$ & $6.6 \text{ ns}$ & $10 \text{ ns}$ \\
+$n$ & $10 \text{ ns}$ & $50 \text{ ns}$ & $100 \text{ ns}$ & $1 \ \mu\text{s}$ \\
+$n \log_2 n$ & $33 \text{ ns}$ & $282 \text{ ns}$ & $664 \text{ ns}$ & $10 \ \mu\text{s}$ \\
+$n^2$ & $100 \text{ ns}$ & $2.5 \ \mu\text{s}$ & $10 \ \mu\text{s}$ & $1 \text{ ms}$ \\
+$n^3$ & $1 \ \mu\text{s}$ & $125 \ \mu\text{s}$ & $1 \text{ ms}$ & $1 \text{ s}$ \\
+$2^n$ & $1 \ \mu\text{s}$ & $13.0 \text{ days}$ & $4.0 \times 10^{13} \text{ years}$ & Astronomical \\
+$n!$ & $3.6 \text{ ms}$ & $10^{48} \text{ years}$ & Astronomical & Astronomical \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Master Algorithmic Complexity Matrix}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Master Computational Complexity Matrix of Analyzed Algorithms}
+\label{tab:master}
+\vspace{2pt}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{@{}lllllll@{}}
+\toprule
+\textbf{Algorithm} & \textbf{Paradigm} & \textbf{Best Time} & \textbf{Average Time} & \textbf{Worst Time} & \textbf{Aux. Space} & \textbf{In-Place?} \\
+\midrule
+\textbf{Finding Maximum} & Linear Scan & $\Theta(n)$ & $\Theta(n)$ & $\Theta(n)$ & $\Theta(1)$ & Yes \\
+\textbf{Linear Search} & Brute Force & $\Theta(1)$ & $\Theta(n)$ & $\Theta(n)$ & $\Theta(1)$ & Yes \\
+\textbf{Binary Search} & Divide \& Conquer & $\Theta(1)$ & $\Theta(\log n)$ & $\Theta(\log n)$ & $\Theta(1)$ & Yes \\
+\textbf{Bubble Sort (Opt.)} & Brute / Exchange & $\Theta(n)^*$ & $\Theta(n^2)$ & $\Theta(n^2)$ & $\Theta(1)$ & Yes \\
+\textbf{Insertion Sort} & Incremental & $\Theta(n)^\dagger$ & $\Theta(n^2)$ & $\Theta(n^2)$ & $\Theta(1)$ & Yes \\
+\textbf{Greedy Change} & Greedy & $\Theta(r)$ & $\Theta(r)$ & $\Theta(r)$ & $\Theta(r)$ & Yes \\
+\bottomrule
+\multicolumn{7}{l}{\footnotesize $^*$Best-case Bubble Sort requires exactly $n-1$ comparisons and 0 swaps using an early-exit flag.} \\
+\multicolumn{7}{l}{\footnotesize $^\dagger$Best-case Insertion Sort requires exactly $n-1$ comparisons and 0 shifts on pre-sorted arrays.}
+\end{tabular}}
+\end{table}
+
+% -----------------------------------------------------------------------------
+% SYNTHESIS AND CONCLUSION
+% -----------------------------------------------------------------------------
+\section{Synthesis and Practical Implications in Modern IT Systems}
+For an Information Technology professional, mastering the principles of algorithmic design and asymptotic complexity is of paramount practical significance:
+\begin{enumerate}[leftmargin=*,itemsep=2pt,topsep=2pt]
+    \item \textbf{Scalability in Distributed Big-Data Systems:} Modern enterprise systems routinely handle datasets exceeding $n = 10^9$ records. At this magnitude, an $O(n \log n)$ algorithm executes within minutes, whereas an $O(n^2)$ algorithm requires decades of CPU time, rendering it intractable.
+    \item \textbf{Hardware Cache Locality vs. Asymptotic Bounds:} Although the theoretical RAM model assumes uniform $O(1)$ memory access, physical computer architectures feature multi-tiered cache hierarchies (L1, L2, L3). Algorithms with sequential memory access patterns (such as Insertion Sort on contiguous arrays) exhibit superior spatial and temporal cache locality, often outperforming theoretically superior algorithms on small datasets ($n < 64$).
+    \item \textbf{Production Hybrid Algorithms:} Practical software libraries rarely rely on a single paradigm. Modern standard sorting engines (e.g., Python and Java's \textit{Timsort}) employ an adaptive hybrid approach: dividing input arrays using Merge Sort and transitioning to Insertion Sort once sub-arrays reach $n \le 64$ to leverage its $O(n)$ best-case behavior and low constant factors.
+\end{enumerate}
+
+% -----------------------------------------------------------------------------
+% REFERENCES AND BIBLIOGRAPHY
+% -----------------------------------------------------------------------------
+\section{References and Bibliography}
+\begin{enumerate}[leftmargin=*,itemsep=3pt,topsep=2pt]
+    \item \textbf{Rosen, Kenneth H.} (2019). \textit{Discrete Mathematics and Its Applications}, 8th Edition. McGraw-Hill Education. [Primary Reference: Chapter 3, ``Algorithms, the Growth of Functions, and Complexity of Algorithms'', Sections 3.1, 3.2, and 3.3, pp.~191--234].
+    \item \textbf{Cormen, Thomas H., Leiserson, Charles E., Rivest, Ronald L., \& Stein, Clifford.} (2022). \textit{Introduction to Algorithms}, 4th Edition. The MIT Press.
+    \item \textbf{Knuth, Donald E.} (1997). \textit{The Art of Computer Programming, Volume 1: Fundamental Algorithms}, 3rd Edition. Addison-Wesley Professional.
+    \item \textbf{Knuth, Donald E.} (1998). \textit{The Art of Computer Programming, Volume 3: Sorting and Searching}, 2nd Edition. Addison-Wesley Professional.
+    \item \textbf{Sipser, Michael.} (2013). \textit{Introduction to the Theory of Computation}, 3rd Edition. Cengage Learning.
+\end{enumerate}
+
+\end{document}
